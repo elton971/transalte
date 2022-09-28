@@ -1,14 +1,30 @@
-
-import React from 'react';
-import { Platform, StyleSheet, View,Text } from 'react-native';
+import React, { useContext } from 'react';
+import {StyleSheet, View,Text, FlatList } from 'react-native';
+import { CardHome } from '../components/CardHome';
+import { SaveDownContext } from '../contextApi/context';
 
 
 
 export default function SavedScreen() {
+
+  const {save}=useContext(SaveDownContext)
+
   return (
-    <View style={styles.container}>
-      <Text style={styles.title}>Tab Two</Text>
-      <View style={styles.separator} />
+    <View  style={styles.container}>
+      <FlatList
+          data={save}
+          renderItem={({ item, index }) => (
+            <CardHome 
+              text={item.text} 
+              translate={save}
+              index={index}
+              setter={()=>{}}
+              textTyped={item.inputText}
+              viewBoolean={false}
+            />        
+          )}
+          showsVerticalScrollIndicator={false}
+      />
     </View>
   );
 }
@@ -16,16 +32,8 @@ export default function SavedScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  title: {
-    fontSize: 20,
-    fontWeight: 'bold',
-  },
-  separator: {
-    marginVertical: 30,
-    height: 1,
-    width: '80%',
+    backgroundColor:"#fff",
+    paddingHorizontal:20
+    
   },
 });

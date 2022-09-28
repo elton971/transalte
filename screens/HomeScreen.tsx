@@ -4,13 +4,11 @@ import { Platform, StyleSheet, View,Text, TextInput, FlatList, ActivityIndicator
 import SelectDropdown from 'react-native-select-dropdown'
 import { FontAwesome,AntDesign } from '@expo/vector-icons';
 import { Button } from "react-native-paper";
-
-
-
 import { RootTabScreenProps } from '../types';
 import { CardHome } from '../components/CardHome';
+import { useToast } from 'react-native-toast-notifications'
 
-
+//Interface do objecto que ira receber o texto normal e o texto traduzido
 interface translateProps{
     text:string,
     inputText:string
@@ -18,16 +16,16 @@ interface translateProps{
 
 export default function HomeScreen({ navigation }: RootTabScreenProps<'TabOne'>) {
 
-    
+    const [fromLanguanges,setFromLanguanges]=useState<string>('')//armazenar lingua que será traduzida
+    const [toLanguanges,setToLanguanges]=useState<string>('')//armaznar para que lingua deverá ser traduzida
+    const [textValue,setTextValue]=useState<string>('Enter Text')//armazenar o texto que sera traduzido
+    const [translate,setTranslate]=useState<Array<translateProps>>([])//armazanar o texto ja traduzido
+    const [Languanges,setLanguanges]=useState<string>('Select an language')//variavel auxiliar para armazenar a lingua selecionada
+    const [loading, setLoading]= useState<boolean>(false)//variavel para controlar o loading
 
-    const [fromLanguanges,setFromLanguanges]=useState<string>('')
-    const [toLanguanges,setToLanguanges]=useState<string>('')
-    const [textValue,setTextValue]=useState<string>('Enter Text')
-    const [value,setValue]=useState<string>('')
-    const [translate,setTranslate]=useState<Array<translateProps>>([])
-    const [Languanges,setLanguanges]=useState<string>('Select an language')
+    const toast=useToast();
 
-    const [loading, setLoading]= useState<boolean>(false)
+    //nomes do paises
     const countries = [
         "Inglês",
         "Espanhol",
@@ -47,6 +45,7 @@ export default function HomeScreen({ navigation }: RootTabScreenProps<'TabOne'>)
         "Português (Portugal)",
     ]
 
+    //domain name de cada pais
     const nameFlag=[
         "en-GB",
         "es-ES",
@@ -66,19 +65,41 @@ export default function HomeScreen({ navigation }: RootTabScreenProps<'TabOne'>)
         "pt-PT",
     ]
 
+    //requisicao na api mandando o texto e a lingua
     const handleAddNewItemTranslate=()=>{
-        setLoading(true)
-        fetch(
-            `https://api.mymemory.translated.net/get?q=${textValue}&langpair=${fromLanguanges}|${toLanguanges}`
-        )
-        .then((res) => res.json())
-        .then((data) => {
-            const text=data.responseData.translatedText;
-            const inputText=textValue
-            setTranslate([...translate,{text,inputText}])
-            setLoading(false)
-        });
-        setTextValue('Enter Text')
+        if(textValue==null || textValue=='')
+        {
+            toast.show("Enter text to be translated", {
+                type: "danger",
+                placement: "bottom",
+                duration: 1000,
+                animationType: "zoom-in",
+            });
+        }
+        else{
+            if(fromLanguanges=='' || toLanguanges==''){
+                toast.show("Select an languages to translate", {
+                    type: "danger",
+                    placement: "bottom",
+                    duration: 1000,
+                    animationType: "zoom-in",
+                });
+            }
+            else{
+                setLoading(true)
+                fetch(
+                    `https://api.mymemory.translated.net/get?q=${textValue}&langpair=${fromLanguanges}|${toLanguanges}`
+                )
+                .then((res) => res.json())
+                .then((data) => {
+                    const text=data.responseData.translatedText;
+                    const inputText=textValue
+                    setTranslate([{text,inputText},...translate])
+                    setLoading(false)
+                });
+            }
+        }
+       
     }
   
   return (
@@ -164,6 +185,8 @@ export default function HomeScreen({ navigation }: RootTabScreenProps<'TabOne'>)
                }
                 
             </View>
+
+        
             <TextInput
                 multiline
                 autoCapitalize="sentences"
@@ -190,7 +213,10 @@ export default function HomeScreen({ navigation }: RootTabScreenProps<'TabOne'>)
                     translate={translate}
                     index={index}
                     setter={setTranslate}
-                    textTyped={item.inputText}/>
+                    textTyped={item.inputText}
+                    viewBoolean={true}
+                    
+                    />
                     
                 )}
                 showsVerticalScrollIndicator={false}

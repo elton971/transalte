@@ -12,11 +12,13 @@ import {  Pressable } from 'react-native';
 
 import Colors from '../constants/Colors';
 
-import ModalScreen from '../screens/ModalScreen';
+// import ModalScreen from '../screens/ModalScreen';
 import TabOneScreen from '../screens/HomeScreen';
 import TabTwoScreen from '../screens/SavedScreen';
 import { RootStackParamList, RootTabParamList, RootTabScreenProps } from '../types';
 import LinkingConfiguration from './LinkingConfiguration';
+import { SaveDownProvider } from '../contextApi/context';
+import { ToastProvider } from 'react-native-toast-notifications';
 
 export default function Navigation() {
   return (
@@ -53,8 +55,14 @@ const BottomTab = createBottomTabNavigator<RootTabParamList>();
 
 function BottomTabNavigator() {
   
-
+  
   return (
+    <ToastProvider
+    successColor={Colors.light.tint}
+    successIcon={<FontAwesome name="smile-o"size={20} color={"blue"}/>}
+    offsetBottom={50}
+    >
+    <SaveDownProvider>
     <BottomTab.Navigator
       initialRouteName="TabOne"
       screenOptions={{
@@ -91,7 +99,10 @@ function BottomTabNavigator() {
         }}
       />
     </BottomTab.Navigator>
+    </SaveDownProvider>
+    </ToastProvider>
   );
+
 }
 
 /**
