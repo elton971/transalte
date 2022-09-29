@@ -99,7 +99,6 @@ export default function HomeScreen({ navigation }: RootTabScreenProps<'TabOne'>)
                 });
             }
         }
-       
     }
   
   return (
@@ -198,7 +197,7 @@ export default function HomeScreen({ navigation }: RootTabScreenProps<'TabOne'>)
                     setTextValue(text)
                 }}
                 onSubmitEditing={()=>handleAddNewItemTranslate()}
-                defaultValue={textValue}
+                
                 placeholderTextColor={"black"}
                 style={styles.text}
             />
